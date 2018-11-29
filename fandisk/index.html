@@ -83,7 +83,7 @@
         extent = document.getElementById('extent'),
         cvs = canvas.getContext('2d'),
         lineCvs = lineCanvas.getContext('2d'),
-        radius = fandisk.width,
+        radius = canvas.width,
         ob = {};
 
 
@@ -148,8 +148,8 @@
         moveDraw(e) {
             ob.startX = ob.moveX;
             ob.startY = ob.moveY;
-            let moveX = ob.moveX = e.clientX - fandisk.parentElement.offsetLeft + window.scrollX,
-                moveY = ob.moveY = e.clientY - fandisk.parentElement.offsetTop + window.scrollY;
+            let moveX = ob.moveX = e.clientX - canvas.parentElement.offsetLeft + window.scrollX,
+                moveY = ob.moveY = e.clientY - canvas.parentElement.offsetTop + window.scrollY;
             this.rotateDraw(num, ob);
         }
     }
@@ -157,15 +157,15 @@
     let draw = new Draw();
     draw.drawLine(num);
     // 监听事件 画图
-    fandisk.addEventListener('mousedown', (e) => {
+    canvas.addEventListener('mousedown', (e) => {
         let ob = {};
-        let startX = ob.startX = ob.moveX = e.clientX - fandisk.parentElement.offsetLeft + window.scrollX,
-            startY = ob.startY = ob.moveY = e.clientY - fandisk.parentElement.offsetTop + window.scrollY;
+        let startX = ob.startX = ob.moveX = e.clientX - canvas.parentElement.offsetLeft + window.scrollX,
+            startY = ob.startY = ob.moveY = e.clientY - canvas.parentElement.offsetTop + window.scrollY;
         document.addEventListener('mousemove', moveE = (e) => {
             ob.startX = ob.moveX;
             ob.startY = ob.moveY;
-            let moveX = ob.moveX = e.clientX - fandisk.parentElement.offsetLeft + window.scrollX,
-                moveY = ob.moveY = e.clientY - fandisk.parentElement.offsetTop + window.scrollY;
+            let moveX = ob.moveX = e.clientX - canvas.parentElement.offsetLeft + window.scrollX,
+                moveY = ob.moveY = e.clientY - canvas.parentElement.offsetTop + window.scrollY;
             draw.rotateDraw(num, ob);
         });
         document.addEventListener('mouseup', (e) => {
