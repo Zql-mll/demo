@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>spriteJs</title>
+    <style>
+        body{
+            background: black;
+        }
+        div {
+            width: 1000px;
+            height: 600px;
+            /*border: 1px solid red;*/
+            border-radius: 10px;
+            margin: 30px auto;
+            overflow: hidden;
+            background: black;
+        }
+    </style>
+</head>
+<body>
+<div id="container"></div>
+</body>
+<script src="https://unpkg.com/spritejs/dist/spritejs.min.js"></script>
+<script>
+    // localStorage.setItem('language', 'zh-CN');
+    let container = document.getElementById('container'),
+        width = container.offsetWidth * 2,
+        height = container.offsetHeight;
+
+    const {Scene, Sprite} = spritejs;
+
+    const scene = new Scene('#container', {
+        // viewport: ['auto', 'auto'],
+        resolution: ['flex', 'flex'],
+    });
+    (async function () {
+        await scene.preload({
+                id: 'robot',
+                src: './img/robot.png'
+            }, {
+                id: 'rabbit',
+                src: './img/rabbit.png'
+            }, {
+                id: 'egg1',
+                src: './img/dragon-egg1.png'
+            }, {
+                id: 'egg2',
+                src: './img/dragon-egg2.png'
+            }, {
+                id: 'bg',
+                src: './img/bgImage.png'
+            }, {
+                id: 'snow',
+                src: './img/snowflake.png'
+            }
+        )
+    })();
+
+    const layer = scene.layer();
+
+    const robot = new Sprite('robot');
+    const rabbit = new Sprite('rabbit');
+    const egg1 = new Sprite('egg1');
+    const egg2 = new Sprite('egg2');
+    const bg = new Sprite('bg');
+    bg.attr({
+        anchor: [0, 0],
+        x: 0,
+        y: 0,
+        // size: [1000, 600]
+    });
+    robot.attr({
+        anchor: [0.5, 0],
+        x: width,
+        y: 0,
+        // scale: 0.5
+        size: [182, 252]
+    });
+    let robotHeight = robot.offsetSize[1];
+
+    async function init() {
+        let rabbitP = await initEgg(rabbit);
+        let egg1P = await initEgg(egg1);
+        let egg2P = await initEgg(egg2);
+        layer.append(bg);
+        layer.append(robot);
+        layer.append(rabbitP);
+        layer.append(egg1P);
+        layer.append(egg2P);
+        animateRobot();
+
+        // 创建300片雪花，循环，稍微节省点性能
+        for(let i = 0;i < 300;i++){
+            setTimeout(async () => {
+                let snow = new Sprite('snow');
+                let snowP = await initSnow(snow);
+                layer.append(snowP.sprite);
+                animateSnow(snowP);
+            },100 * i);
+        }
+    }
+
+    // 入口
+    init();
+
+
+    // 初始化蛋蛋
+    async function initEgg(egg) {
+        await egg.attr({
+            anchor: [0.5, 0.5],
+            x: width / 2,
+            y: (height / 2) + robotHeight,
+            opacity: 0
+        });
+        return egg;
+    }
+
+    // 初始化雪花
+    async function animateSnow(snow) {
+        snow.sprite.animate([
+            {
+                x:snow.attribute.x,
+                y:0
+            },
+            {
+                x:snow.attribute.x,
+                y:height * 2
+            }
+        ], {
+            duration: 5000,
+            iterations: Infinity,
+            direction: 'default',
+        })
+    }
+
+    // 雪花的动画
+    async function initSnow(snowSpite) {
+        var sss = random(20,100);
+        let snow = {
+            width: sss,
+            height: sss,
+            x: random(0, width),
+            y: 0,
+            opacity: random(0, 1)
+        };
+        await snowSpite.attr({
+            anchor:[0.5,0.5],
+            x: snow.x,
+            y: snow.y,
+            size: [snow.width, snow.height],
+            opacity: snow.opacity
+        });
+        let obj = {
+            attribute:snow,
+            sprite:snowSpite
+        };
+        return obj;
+    }
+
+
+    // 会飞的机器人
+    async function animateRobot() {
+        await robot.animate([
+            {x: width, y: 0},
+            {x: width / 2, y: height / 2},
+            {x: width / 2, y: height / 2 + 60},
+        ], {
+            duration: 3500,
+            iterations: 1,
+            direction: 'default',
+        }).finished;
+
+        animateEgg(rabbit, 45);
+
+        await robot.animate([
+            {x: width / 2, y: height / 2 + 60},
+            {x: width / 2, y: height / 2},
+            {x: width / 2, y: height / 2 + 60},
+        ], {
+            duration: 1500,
+            iterations: 1,
+            direction: 'default',
+        }).finished;
+
+        animateEgg(egg1, -45);
+
+        await robot.animate([
+            {x: width / 2, y: height / 2 + 60},
+            {x: width / 2, y: height / 2},
+            {x: width / 2, y: height / 2 + 60},
+        ], {
+            duration: 1500,
+            iterations: 1,
+            direction: 'default',
+        }).finished;
+
+        animateEgg(egg2, 0);
+
+        await robot.animate([
+            {x: width / 2, y: height / 2 + 60},
+            {x: width / 2, y: height / 2},
+            {x: 0, y: 0}
+        ], {
+            duration: 2000,
+            iterations: 1,
+            direction: 'default',
+        }).finished;
+        animateRobot();
+    }
+
+    // 蛋的动画
+    async function animateEgg(egg, deg) {
+        egg.animate([
+            {
+                x: width / 2,
+                y: (height / 2) + robotHeight + 60,
+                opacity: 1
+            },
+            {
+                x: width / 2 + deg,
+                y: (height / 2) + robotHeight + 360,
+                opacity: 1
+            },
+            {
+                rotate: deg
+            }
+        ], {
+            duration: 2000,
+            iterations: 1,
+            direction: 'default',
+            // fill: 'forwards'
+        });
+    }
+
+    // 随机
+    function random(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+</script>
+</html>
+
+
+
+
+
+
+
+
+
+
