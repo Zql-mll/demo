@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <title>spriteJs</title>
     <style>
-        body{
+        body {
             background: black;
         }
+
         div {
             width: 1000px;
             height: 600px;
@@ -36,6 +37,9 @@
     });
     (async function () {
         await scene.preload({
+                id: 'bg',
+                src: './img/bgImage.png'
+            }, {
                 id: 'robot',
                 src: './img/robot.png'
             }, {
@@ -48,9 +52,6 @@
                 id: 'egg2',
                 src: './img/dragon-egg2.png'
             }, {
-                id: 'bg',
-                src: './img/bgImage.png'
-            }, {
                 id: 'snow',
                 src: './img/snowflake.png'
             }
@@ -59,7 +60,7 @@
 
     const layer = scene.layer();
 
-    const robot = new Sprite('robot');
+    const robot = new Sprite('./img/robot.png');
     const rabbit = new Sprite('rabbit');
     const egg1 = new Sprite('egg1');
     const egg2 = new Sprite('egg2');
@@ -91,13 +92,13 @@
         animateRobot();
 
         // 创建300片雪花，循环，稍微节省点性能
-        for(let i = 0;i < 300;i++){
+        for (let i = 0; i < 300; i++) {
             setTimeout(async () => {
                 let snow = new Sprite('snow');
                 let snowP = await initSnow(snow);
                 layer.append(snowP.sprite);
                 animateSnow(snowP);
-            },100 * i);
+            }, 100 * i);
         }
     }
 
@@ -120,12 +121,12 @@
     async function animateSnow(snow) {
         snow.sprite.animate([
             {
-                x:snow.attribute.x,
-                y:0
+                x: snow.attribute.x,
+                y: 0
             },
             {
-                x:snow.attribute.x,
-                y:height * 2
+                x: snow.attribute.x,
+                y: height * 2
             }
         ], {
             duration: 5000,
@@ -136,7 +137,7 @@
 
     // 雪花的动画
     async function initSnow(snowSpite) {
-        var sss = random(20,100);
+        var sss = random(20, 100);
         let snow = {
             width: sss,
             height: sss,
@@ -145,15 +146,15 @@
             opacity: random(0, 1)
         };
         await snowSpite.attr({
-            anchor:[0.5,0.5],
+            anchor: [0.5, 0.5],
             x: snow.x,
             y: snow.y,
             size: [snow.width, snow.height],
             opacity: snow.opacity
         });
         let obj = {
-            attribute:snow,
-            sprite:snowSpite
+            attribute: snow,
+            sprite: snowSpite
         };
         return obj;
     }
